@@ -1,0 +1,10 @@
+d:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\BackupCore.deps.json
+d:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\BackupCore.runtimeconfig.json
+d:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\BackupCore.runtimeconfig.dev.json
+d:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\BackupCore.dll
+d:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\BackupCore.pdb
+d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.csproj.CoreCompileInputs.cache
+d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.AssemblyInfoInputs.cache
+d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.AssemblyInfo.cs
+d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.dll
+d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.pdb
