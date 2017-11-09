@@ -12,12 +12,20 @@ namespace BackupCore
         public string SourcePath;
         public string DestinationPath;
         public List<string> FilesToCopy;
+        public BackupMode Mode;
 
-        public BackupAction(string source, string destination)
+        public BackupAction(string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup)
         {
             SourcePath = source;
             DestinationPath = destination;
             FilesToCopy = RecursiveFileFinder.ProcessPath(source);
+            Mode = bmode;
         }
     }
+
+    enum BackupMode
+    {
+        DatabaseCompareBackup,
+        FileCompareBackup
+    };
 }

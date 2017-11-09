@@ -15,7 +15,7 @@ namespace BackupCore
         public static void Main(string[] args)
         {
             DbName = "files";
-            BackupActionList.Add(new BackupAction(@"D:\THINGS\Projects", @"D:\Projects"));
+            BackupActionList.Add(new BackupAction(@"D:\THINGS\Projects", @"D:\Projects", BackupMode.FileCompareBackup));
 
             foreach (var backupAction in BackupActionList)
             {
@@ -29,6 +29,60 @@ namespace BackupCore
         /// <param name="action">The BackupAction to process</param>
         static void BackupFiles(BackupAction action)
         {
+            switch (action.Mode)
+            {
+                case BackupMode.DatabaseCompareBackup:
+                    DatabaseCompareBackup(action);
+                    break;
+
+                case BackupMode.FileCompareBackup:
+                    FileCompareBackup(action);
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+
+        static void FileCompareBackup(BackupAction action)
+        {
+            Console.WriteLine("Proceeding with a simple file cross-comparison backup job");
+            Console.WriteLine("Difference mechanism: Write-time based");
+            Console.WriteLine("Backing up " + action.SourcePath + " to " + action.DestinationPath);
+            foreach (var file in action.FilesToCopy)
+            {
+                string targetPath = action.DestinationPath + (file.Replace(action.SourcePath, ""));
+                if (File.Exists(targetPath))
+                {
+                    if (File.GetLastWriteTime(file) > File.GetLastWriteTime(targetPath)) // file changed
+                    {
+                        File.Copy(file, targetPath, true);
+                        Console.WriteLine("Replaced file " + Path.GetFileName(targetPath));
+                    }
+                    else
+                    {
+                        Console.WriteLine("File doesn't need replacing " + Path.GetFileName(targetPath));
+                    }
+                }
+                else
+                {
+                    if (!Directory.Exists(targetPath.Replace(Path.GetFileName(file), "")))
+                    {
+                        Directory.CreateDirectory(targetPath.Replace(Path.GetFileName(file), "")); //ensure the directory to backup to exists
+                    }
+                    File.Copy(file, targetPath, false);
+                    Console.WriteLine("Added new file " + Path.GetFileName(targetPath));
+                }
+            }
+        }
+
+        static void DatabaseCompareBackup(BackupAction action)
+        {
+            Console.WriteLine("Proceeding with a database based comparison backup job");
+            Console.WriteLine("Difference mechanism: Write-time based");
+            Console.WriteLine("Backing up " + action.SourcePath + " to " + action.DestinationPath);
+
             using (var db = new FileContext())
             {
                 db.Database.EnsureDeleted();
@@ -95,7 +149,7 @@ namespace BackupCore
 
             if (!Directory.Exists(targetPath.Replace(Path.GetFileName(file), "")))
             {
-                Directory.CreateDirectory(targetPath.Replace(Path.GetFileName(file), ""));
+                Directory.CreateDirectory(targetPath.Replace(Path.GetFileName(file), "")); //ensure the directory to backup to exists
             }
 
             File.Copy(file, targetPath, false);
