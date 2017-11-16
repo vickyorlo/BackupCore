@@ -29,5 +29,6 @@ namespace BackupCore
         public string BackupPath { get; set; }
         public string FileName { get; set; }
         public System.DateTime DateModified { get; set; }
+        public byte[] FileHash { get; set; }
     }
 }
