@@ -13,6 +13,7 @@ namespace BackupCore
         public string DestinationPath;
         public List<string> FilesToCopy;
         public BackupMode Mode;
+        public CompareMethod Comparator;
 
         public BackupAction(string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup)
         {
@@ -28,4 +29,10 @@ namespace BackupCore
         DatabaseCompareBackup,
         FileCompareBackup
     };
+
+    enum CompareMethod
+    {
+        HashComparator,
+        WriteTimeComparator
+    }
 }

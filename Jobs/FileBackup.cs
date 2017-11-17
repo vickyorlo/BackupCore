@@ -10,7 +10,7 @@ namespace BackupCore
         /// Safer than database backups, allows for modification of jobs at the user's risk. However, can be bottlenecked by IO speeds.
         /// </summary>
         /// <param name="action">The action containing the source, destination and files to backup</param>
-        static void Start(BackupAction action)
+        public static void Start(BackupAction action)
         {
             Console.WriteLine("Proceeding with a simple file cross-comparison backup job");
             Console.WriteLine("Difference mechanism: Write-time based");
@@ -21,7 +21,7 @@ namespace BackupCore
                 if (File.Exists(targetPath))
                 {
 
-                    if (File.GetLastWriteTime(file) > File.GetLastWriteTime(targetPath)) // file changed
+                    if () // file changed
                     {
                         File.Copy(file, targetPath, true);
                         Console.WriteLine("Replaced file " + Path.GetFileName(targetPath));
@@ -41,6 +41,21 @@ namespace BackupCore
                     Console.WriteLine("Added new file " + Path.GetFileName(targetPath));
                 }
             }
+        }
+        private static bool AreFilesUnchanged(string file1, string file2, CompareMethod method)
+        {
+            switch (method)
+            {
+                case CompareMethod.WriteTimeComparator:
+                    {
+                        return File.GetLastWriteTime(file1) > File.GetLastWriteTime(file2);
+                    }
+                case CompareMethod.HashComparator:
+                    {
+                        return HashTools.CompareHashes(HashTools.HashFile(file1), HashTools.HashFile(file2));
+                    }
+            }
+            return true;
         }
     }
 }

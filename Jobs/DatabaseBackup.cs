@@ -26,7 +26,7 @@ namespace BackupCore
                     string targetPath = action.DestinationPath + (file.Replace(action.SourcePath, ""));
                     if ((cataloguedFile = db.Files.Find(file, targetPath)) == null)
                     {
-                        CatalogueAndCopyNewFile(db, targetPath, file);
+                        CatalogueAndCopyNewFile(db, targetPath, file, action.Comparator);
                     }
                     else
                     {
@@ -52,7 +52,7 @@ namespace BackupCore
         /// <param name="currentFile">The catalogued file to update</param>
         private static void ReplaceCataloguedFile(FileContext db, ProcessedFile currentFile)
         {
-            if (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified) //then our file got updated
+            if () //then our file got updated
             {
                 if (File.Exists(currentFile.BackupPath))
                 {
@@ -71,13 +71,29 @@ namespace BackupCore
             }
         }
 
+        private static bool IsFileEqualToDB(ProcessedFile currentFile, CompareMethod method)
+        {
+            switch (method)
+            {
+                case CompareMethod.WriteTimeComparator:
+                    {
+                        return (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified);
+                    }
+                case CompareMethod.HashComparator:
+                    {
+                        return (HashTools.CompareHashes(HashTools.HashFile(currentFile.FilePath), currentFile.FileHash));
+                    }
+            }
+            return true;
+        }
+
         /// <summary>
         /// Given a path to a file, adds it to the file database and backs it up to the target path.
         /// </summary>
         /// <param name="db">The database containing catalogues files</param>
         /// <param name="targetPath">The path to copy the file to</param>
         /// <param name="file">The file to back up</param>
-        private static void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file)
+        private static void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file, CompareMethod comparator)
         {
 
             if (!Directory.Exists(targetPath.Replace(Path.GetFileName(file), "")))
@@ -87,7 +103,20 @@ namespace BackupCore
 
             File.Copy(file, targetPath, false);
 
-            db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, DateModified = File.GetLastWriteTime(file) });
+            switch (comparator)
+            {
+                case CompareMethod.WriteTimeComparator:
+                    {
+                        db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, DateModified = File.GetLastWriteTime(file) });
+                        break;
+                    }
+                case CompareMethod.HashComparator:
+                    {
+                        db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, FileHash = HashTools.HashFile(file) });
+                        break;
+                    }
+
+            }
 
             Console.WriteLine("Added new file " + Path.GetFileName(file));
         }

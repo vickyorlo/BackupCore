@@ -12,7 +12,7 @@ namespace BackupCore
         /// </summary>
         /// <param name="file">The string containing the path to the file to hash</param>
         /// <returns>A byte array containing the computed hash.</returns>
-        static byte[] HashFile(string file)
+        public static byte[] HashFile(string file)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace BackupCore
         /// <param name="hash1">One hash to compare</param>
         /// <param name="hash2">Another hash to compare</param>
         /// <returns>True if the hashes are equal, false otherwise.</returns>
-        static bool CompareHashes(byte[] hash1, byte[] hash2)
+        public static bool CompareHashes(byte[] hash1, byte[] hash2)
         {
             if (hash1.Length == hash2.Length) return false;
             for (int i = 0; i < hash1.Length; i++)
