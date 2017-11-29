@@ -11,4 +11,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.0"/>
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <None Update="7z.exe" CopyToOutputDirectory="PreserveNewest" />
+</ItemGroup>
 </Project>

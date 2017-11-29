@@ -3193,11 +3193,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\THINGS\\Projects\\BackupCore\\BackupCore.csproj",
+      "projectUniqueName": "d:\\THINGS\\Projects\\BackupCore\\BackupCore.csproj",
       "projectName": "BackupCore",
-      "projectPath": "D:\\THINGS\\Projects\\BackupCore\\BackupCore.csproj",
+      "projectPath": "d:\\THINGS\\Projects\\BackupCore\\BackupCore.csproj",
       "packagesPath": "C:\\Users\\Vic\\.nuget\\packages\\",
-      "outputPath": "D:\\THINGS\\Projects\\BackupCore\\obj\\",
+      "outputPath": "d:\\THINGS\\Projects\\BackupCore\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

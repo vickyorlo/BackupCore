@@ -15,12 +15,16 @@ namespace BackupCore
         public BackupMode Mode;
         public CompareMethod Comparator;
 
-        public BackupAction(string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup)
+        public int BackupCopies;
+
+        public BackupAction(string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup, CompareMethod comparator = CompareMethod.WriteTimeComparator, int copies = 1)
         {
             SourcePath = source;
             DestinationPath = destination;
             FilesToCopy = RecursiveFileFinder.ProcessPath(source);
             Mode = bmode;
+            Comparator = comparator;
+            BackupCopies = copies;
         }
     }
 

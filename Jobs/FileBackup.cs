@@ -21,7 +21,7 @@ namespace BackupCore
                 if (File.Exists(targetPath))
                 {
 
-                    if () // file changed
+                    if (AreFilesUnchanged(file, targetPath, action.Comparator)) // file changed
                     {
                         File.Copy(file, targetPath, true);
                         Console.WriteLine("Replaced file " + Path.GetFileName(targetPath));

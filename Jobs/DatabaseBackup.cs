@@ -5,20 +5,21 @@ namespace BackupCore
 {
     static class DatabaseBackup
     {
+        private static BackupAction action;
         /// <summary>
         /// Starts a backup action, using an internal database to speed up file comparation.
         /// Good for cases of relatively slow IO speeds.
         /// </summary>
         /// <param name="action">The action containing the source, destination and files to backup</param>
-        public static void Start(BackupAction action)
+        public static void Start(BackupAction backupAction)
         {
+            action = backupAction;
             Console.WriteLine("Proceeding with a database based comparison backup job");
             Console.WriteLine("Difference mechanism: Write-time based");
             Console.WriteLine("Backing up " + action.SourcePath + " to " + action.DestinationPath);
 
             using (var db = new FileContext())
             {
-                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
                 ProcessedFile cataloguedFile;
                 foreach (var file in action.FilesToCopy)
@@ -26,7 +27,7 @@ namespace BackupCore
                     string targetPath = action.DestinationPath + (file.Replace(action.SourcePath, ""));
                     if ((cataloguedFile = db.Files.Find(file, targetPath)) == null)
                     {
-                        CatalogueAndCopyNewFile(db, targetPath, file, action.Comparator);
+                        CatalogueAndCopyNewFile(db, targetPath, file);
                     }
                     else
                     {
@@ -52,17 +53,17 @@ namespace BackupCore
         /// <param name="currentFile">The catalogued file to update</param>
         private static void ReplaceCataloguedFile(FileContext db, ProcessedFile currentFile)
         {
-            if () //then our file got updated
+            if (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified) //then our file got updated
             {
                 if (File.Exists(currentFile.BackupPath))
                 {
-                    File.Copy(currentFile.FilePath, currentFile.BackupPath, true);
+                    PushNewCopy(currentFile.FilePath, currentFile.BackupPath);
                     currentFile.DateModified = File.GetLastWriteTime(currentFile.FilePath);
                     Console.WriteLine("Replaced file " + currentFile.FileName);
                 }
                 else
                 {
-                    throw new Exception("what");
+                    throw new Exception("butt");
                 }
             }
             else
@@ -71,9 +72,25 @@ namespace BackupCore
             }
         }
 
-        private static bool IsFileEqualToDB(ProcessedFile currentFile, CompareMethod method)
+        private static void PushNewCopy(string from, string to, int copies = 0)
         {
-            switch (method)
+            if (++copies < action.BackupCopies)
+            {
+                string copyPath = action.DestinationPath + "/.copyMinus" + copies + "//" + to.Replace(action.DestinationPath, "");
+
+                if (!Directory.Exists(Path.GetDirectoryName(copyPath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(copyPath)); //ensure the directory to backup to exists
+                }
+
+                PushNewCopy(to, copyPath, copies);
+            }
+            File.Copy(from, to, true);
+        }
+
+        private static bool IsFileEqualToDB(ProcessedFile currentFile)
+        {
+            switch (action.Comparator)
             {
                 case CompareMethod.WriteTimeComparator:
                     {
@@ -93,7 +110,7 @@ namespace BackupCore
         /// <param name="db">The database containing catalogues files</param>
         /// <param name="targetPath">The path to copy the file to</param>
         /// <param name="file">The file to back up</param>
-        private static void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file, CompareMethod comparator)
+        private static void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file)
         {
 
             if (!Directory.Exists(targetPath.Replace(Path.GetFileName(file), "")))
@@ -103,7 +120,7 @@ namespace BackupCore
 
             File.Copy(file, targetPath, false);
 
-            switch (comparator)
+            switch (action.Comparator)
             {
                 case CompareMethod.WriteTimeComparator:
                     {
