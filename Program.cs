@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using IniParser;
 using IniParser.Model;
+using CommandLine;
 
 namespace BackupCore
 {
@@ -17,67 +18,117 @@ namespace BackupCore
 
         public static void Main(string[] args)
         {
-            if (args.Length == 1)
+            try
             {
-                var parser = new FileIniDataParser();
-                IniData data = parser.ReadFile(args[0]);
-                var flags = data["Flags"];
-                var files = data["Files"];
+                var result = Parser.Default.ParseArguments<Options>(args);
+                result.WithParsed((options) => AddBackupAction(options));
 
-                string actionName = flags["profile"];
-                BackupMode mode;
-                switch (flags["mode"])
+                foreach (var backupAction in BackupActionList)
                 {
-                    case "database": mode = BackupMode.DatabaseCompareBackup; break;
-                    case "simple": mode = BackupMode.FileCompareBackup; break;
-                    default: throw new ArgumentException("Invalid value in 'mode' setting!");
-                }
-                CompareMethod comparator;
-                switch (flags["compare"])
-                {
-                    case "bydate": comparator = CompareMethod.WriteTimeComparator; break;
-                    case "byhash": comparator = CompareMethod.HashComparator; break;
-                    default: throw new ArgumentException("Invalid value in 'compare' setting!");
-                }
-
-                int copies = Convert.ToInt32(flags["history"]);
-                bool archive = (flags["archive"] == "yes" || flags["archive"] == "true") ? true : false;
-                string password = flags["password"];
-
-                string[] sources = files["sources"].Replace("\"", "").Split(",");
-                string[] destination = files["destinations"].Replace("\"", "").Split(",");
-
-                if (destination.Length == 1)
-                {
-                    foreach (var source in sources)
+                    BackupFiles(backupAction);
+                    if (backupAction.Archive)
                     {
-                        BackupActionList.Add(new BackupAction(actionName, source, destination[0], mode, comparator, copies, archive, password));
+                        ArchiveFiles(backupAction);
                     }
                 }
-                else if (sources.Length == destination.Length)
+            }
+            catch (Exception ex)
+            {
+                Console.Error.Write(ex.Message);
+            }
+
+
+        }
+
+        private static void AddBackupAction(Options options)
+        {
+            if (options.Configuration != null)
+            {
+                ReadConfigurationFromFile(options);
+            }
+            else
+            {
+                ReadConfigurationFromCommandLine(options);
+            }
+        }
+
+        private static void ReadConfigurationFromCommandLine(Options options)
+        {
+            CompareMethod comparator;
+            switch (options.ComparisonMethod)
+            {
+                case "bydate": comparator = CompareMethod.WriteTimeComparator; break;
+                case "byhash": comparator = CompareMethod.HashComparator; break;
+                default: throw new ArgumentException("Invalid value in 'compare' setting!");
+            }
+
+            if (options.Outputs.Count() == 1)
+            {
+                foreach (var source in options.Inputs)
                 {
-                    for (int i = 0; i < sources.Length; i++)
-                    {
-                        BackupActionList.Add(new BackupAction(actionName, sources[i], destination[i], mode, comparator, copies, archive, password));
-                    }
+                    BackupActionList.Add(new BackupAction("backup", options.Inputs[0], options.Outputs[0], BackupMode.FileCompareBackup, comparator, (int)options.History, options.Archive, options.Password));
                 }
-                else
+            }
+            else if (options.Inputs.Count() == options.Outputs.Count())
+            {
+                for (int i = 0; i < options.Inputs.Count(); i++)
                 {
-                    throw new ArgumentException("The number of destinations must be equal to 1 or the number of sources!");
+                    BackupActionList.Add(new BackupAction("backup", options.Inputs[i], options.Outputs[i], BackupMode.FileCompareBackup, comparator, (int)options.History, options.Archive, options.Password));
                 }
             }
             else
             {
-                throw new ArgumentException("Invalid arguments!");
+                throw new ArgumentException("The number of destinations must be equal to 1 or the number of sources!");
+            }
+        }
+
+        private static void ReadConfigurationFromFile(Options options)
+        {
+            var parser = new FileIniDataParser();
+            IniData data = parser.ReadFile(options.Configuration);
+            var flags = data["Flags"];
+            var files = data["Files"];
+
+            string actionName = flags["profile"];
+            BackupMode mode;
+            switch (flags["mode"])
+            {
+                case "database": mode = BackupMode.DatabaseCompareBackup; break;
+                case "simple": mode = BackupMode.FileCompareBackup; break;
+                default: throw new ArgumentException("Invalid value in 'mode' setting!");
+            }
+            CompareMethod comparator;
+            switch (flags["compare"])
+            {
+                case "bydate": comparator = CompareMethod.WriteTimeComparator; break;
+                case "byhash": comparator = CompareMethod.HashComparator; break;
+                default: throw new ArgumentException("Invalid value in 'compare' setting!");
             }
 
-            foreach (var backupAction in BackupActionList)
+            int copies = Convert.ToInt32(flags["history"]);
+            bool archive = (flags["archive"] == "yes" || flags["archive"] == "true") ? true : false;
+            string password = flags["password"];
+
+            string[] sources = files["sources"].Replace("\"", "").Split(",");
+            string[] destination = files["destinations"].Replace("\"", "").Split(",");
+
+            if (destination.Length == 1)
             {
-                BackupFiles(backupAction);
-                if (backupAction.Archive)
+                foreach (var source in sources)
                 {
-                    ArchiveFiles(backupAction);
+                    BackupActionList.Add(new BackupAction(actionName, source, destination[0], mode, comparator, copies, archive, password));
                 }
+            }
+            else if (sources.Length == destination.Length)
+            {
+                for (int i = 0; i < sources.Length; i++)
+                {
+                    BackupActionList.Add(new BackupAction(actionName, sources[i], destination[i], mode, comparator, copies, archive, password));
+                }
+            }
+            else
+            {
+                throw new ArgumentException("The number of destinations must be equal to 1 or the number of sources!");
             }
         }
 

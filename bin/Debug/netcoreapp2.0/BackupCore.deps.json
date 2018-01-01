@@ -1,19 +1,40 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "ab2a7015e2f8a7afd3c38d5c6630dce66be23d51"
+    "signature": "f6e790e6ae4832b590ab11166c535a74220af9cb"
   },
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.0": {
       "BackupCore/1.0.0": {
         "dependencies": {
+          "CommandLineParser": "2.1.1-beta",
           "Microsoft.EntityFrameworkCore.Design": "2.0.0",
           "Microsoft.EntityFrameworkCore.Sqlite": "2.0.0",
           "ini-parser": "3.4.0"
         },
         "runtime": {
           "BackupCore.dll": {}
+        }
+      },
+      "CommandLineParser/2.1.1-beta": {
+        "dependencies": {
+          "System.Collections": "4.0.11",
+          "System.Console": "4.0.0-rc2-24027",
+          "System.Diagnostics.Debug": "4.0.11",
+          "System.Globalization": "4.0.11",
+          "System.IO": "4.1.0",
+          "System.Linq": "4.1.0",
+          "System.Linq.Expressions": "4.1.0",
+          "System.Reflection": "4.1.0",
+          "System.Reflection.Extensions": "4.0.1",
+          "System.Reflection.TypeExtensions": "4.1.0",
+          "System.Resources.ResourceManager": "4.0.1",
+          "System.Runtime": "4.1.0",
+          "System.Runtime.Extensions": "4.1.0"
+        },
+        "runtime": {
+          "lib/netstandard1.5/CommandLine.dll": {}
         }
       },
       "ini-parser/3.4.0": {
@@ -234,6 +255,13 @@
       },
       "System.Collections.Immutable/1.4.0": {},
       "System.ComponentModel.Annotations/4.4.0": {},
+      "System.Console/4.0.0-rc2-24027": {
+        "dependencies": {
+          "System.IO": "4.1.0",
+          "System.Runtime": "4.1.0",
+          "System.Text.Encoding": "4.0.11"
+        }
+      },
       "System.Diagnostics.Debug/4.0.11": {
         "dependencies": {
           "Microsoft.NETCore.Targets": "1.0.1",
@@ -411,6 +439,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "CommandLineParser/2.1.1-beta": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-na5IY9JF7KutS3ZIVBQnXjjmwVDRvAHWT833/NuCNK88GTFmhXSC7WSckuRFyvQ05Ae9PiNWpHeOKk2uKjG08w==",
+      "path": "commandlineparser/2.1.1-beta",
+      "hashPath": "commandlineparser.2.1.1-beta.nupkg.sha512"
     },
     "ini-parser/3.4.0": {
       "type": "package",
@@ -607,6 +642,13 @@
       "sha512": "sha512-29K3DQ+IGU7LBaMjTo7SI7T7X/tsMtLvz1p56LJ556Iu0Dw3pKZw5g8yCYCWMRxrOF0Hr0FU0FwW0o42y2sb3A==",
       "path": "system.componentmodel.annotations/4.4.0",
       "hashPath": "system.componentmodel.annotations.4.4.0.nupkg.sha512"
+    },
+    "System.Console/4.0.0-rc2-24027": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZkOW7ehVR6vnVTfttO0Z1uf3v7mT8cxQZbPHaGDyTt65qh4WzQOXgZYWqDNduyA1xWlvKh28XAhAkK0P39CcAA==",
+      "path": "system.console/4.0.0-rc2-24027",
+      "hashPath": "system.console.4.0.0-rc2-24027.nupkg.sha512"
     },
     "System.Diagnostics.Debug/4.0.11": {
       "type": "package",
