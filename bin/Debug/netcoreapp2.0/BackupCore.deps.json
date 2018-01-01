@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "c2b85a978922d493af3be56688435552543a02ff"
+    "signature": "ab2a7015e2f8a7afd3c38d5c6630dce66be23d51"
   },
   "compilationOptions": {},
   "targets": {
@@ -9,10 +9,16 @@
       "BackupCore/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": "2.0.0",
-          "Microsoft.EntityFrameworkCore.Sqlite": "2.0.0"
+          "Microsoft.EntityFrameworkCore.Sqlite": "2.0.0",
+          "ini-parser": "3.4.0"
         },
         "runtime": {
           "BackupCore.dll": {}
+        }
+      },
+      "ini-parser/3.4.0": {
+        "runtime": {
+          "lib/net20/INIFileParser.dll": {}
         }
       },
       "Microsoft.CSharp/4.4.0": {},
@@ -405,6 +411,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "ini-parser/3.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HGnEiHTQO/gQuInzDV6aJafjYsJgjMgFZtLv6Ne0cZuT4aTf9as5pCFONIrJvh9uyXSutBsAUr2C/E0j4nXclw==",
+      "path": "ini-parser/3.4.0",
+      "hashPath": "ini-parser.3.4.0.nupkg.sha512"
     },
     "Microsoft.CSharp/4.4.0": {
       "type": "package",

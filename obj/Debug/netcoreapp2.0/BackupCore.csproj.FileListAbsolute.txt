@@ -9,3 +9,4 @@ d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.AssemblyInfo.cs
 d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.dll
 d:\THINGS\Projects\BackupCore\obj\Debug\netcoreapp2.0\BackupCore.pdb
 D:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\7z.exe
+D:\THINGS\Projects\BackupCore\bin\Debug\netcoreapp2.0\test.ini

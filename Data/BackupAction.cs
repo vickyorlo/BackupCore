@@ -9,22 +9,28 @@ namespace BackupCore
     /// </summary>
     class BackupAction
     {
-        public string SourcePath;
-        public string DestinationPath;
-        public List<string> FilesToCopy;
-        public BackupMode Mode;
-        public CompareMethod Comparator;
+        public string ActionName { get; }
+        public string SourcePath { get; }
+        public string DestinationPath { get; }
+        public List<string> FilesToCopy { get; }
+        public BackupMode Mode { get; }
+        public CompareMethod Comparator { get; }
+        public int BackupCopies { get; }
+        public bool Archive { get; }
+        public string ArchivePassword { get; }
 
-        public int BackupCopies;
-
-        public BackupAction(string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup, CompareMethod comparator = CompareMethod.WriteTimeComparator, int copies = 1)
+        public BackupAction(string name, string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup, CompareMethod comparator = CompareMethod.WriteTimeComparator,
+            int copies = 1, bool archive = false, string pass = "")
         {
+            ActionName = name;
             SourcePath = source;
             DestinationPath = destination;
             FilesToCopy = RecursiveFileFinder.ProcessPath(source);
             Mode = bmode;
             Comparator = comparator;
             BackupCopies = copies;
+            Archive = archive;
+            ArchivePassword = pass;
         }
     }
 
