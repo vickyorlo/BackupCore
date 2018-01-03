@@ -18,7 +18,7 @@ namespace BackupCore
             Console.WriteLine("Difference mechanism: Write-time based");
             Console.WriteLine("Backing up " + action.SourcePath + " to " + action.DestinationPath);
 
-            using (var db = new FileContext())
+            using (var db = new FileContext(action.ActionName))
             {
                 db.Database.EnsureCreated();
                 ProcessedFile cataloguedFile;
@@ -35,14 +35,19 @@ namespace BackupCore
                     };
                 }
                 var count = db.SaveChanges();
-                Console.WriteLine("{0} records saved to database", count);
 
-                Console.WriteLine();
-                Console.WriteLine("All files in database:");
-                foreach (var file in db.Files)
+                if (Program.Verbose)
                 {
-                    Console.WriteLine(" - {0}", file.FileName);
+                    Console.WriteLine("{0} records saved to database", count);
+
+                    Console.WriteLine();
+                    Console.WriteLine("All files in database:");
+                    foreach (var file in db.Files)
+                    {
+                        Console.WriteLine(" - {0}", file.FileName);
+                    }
                 }
+
             }
         }
 
@@ -63,7 +68,7 @@ namespace BackupCore
                 }
                 else
                 {
-                    throw new Exception("butt");
+                    throw new Exception("Warning: Found a file where there should be none!");
                 }
             }
             else

@@ -11,9 +11,6 @@ namespace BackupCore
 {
     public class Program
     {
-        public static string DbName;
-        public static string SourcePath;
-        public static string DestinationPath;
         static List<BackupAction> BackupActionList = new List<BackupAction>();
 
         public static void Main(string[] args)
@@ -26,18 +23,14 @@ namespace BackupCore
                 foreach (var backupAction in BackupActionList)
                 {
                     BackupFiles(backupAction);
-                    if (backupAction.Archive)
-                    {
-                        ArchiveFiles(backupAction);
-                    }
                 }
+
+                if (BackupActionList[0].Archive) ArchiveFiles(BackupActionList);
             }
             catch (Exception ex)
             {
                 Console.Error.Write(ex.Message);
             }
-
-
         }
 
         private static void AddBackupAction(Options options)
@@ -84,11 +77,19 @@ namespace BackupCore
 
         private static void ReadConfigurationFromFile(Options options)
         {
-            var parser = new FileIniDataParser();
-            IniData data = parser.ReadFile(options.Configuration);
+            IniData data;
+            try
+            {
+                var parser = new FileIniDataParser();
+                data = parser.ReadFile(options.Configuration);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Configuration file does not exist!");
+            }
+
             var flags = data["Flags"];
             var files = data["Files"];
-
             string actionName = flags["profile"];
             BackupMode mode;
             switch (flags["mode"])
@@ -153,12 +154,16 @@ namespace BackupCore
             }
         }
 
-        static void ArchiveFiles(BackupAction action)
+        static void ArchiveFiles(IList<BackupAction> actionList)
         {
             // Prepare the process to run
             ProcessStartInfo start = new ProcessStartInfo();
             // Enter in the command line arguments, everything you would enter after the executable name itself
-            start.Arguments = "a -t7z " + action.ActionName.Replace(" ", "-") + ".7z \"" + action.DestinationPath + "\"";
+            start.Arguments = "a -t7z " + actionList[0].ActionName.Replace(" ", "-") + ".7z \" ";
+            foreach (var action in actionList)
+            {
+                start.Arguments += action.DestinationPath + "\" ";
+            }
             // Enter the executable to run, including the complete path
             start.FileName = ".\\7z.exe";
             // Do you want to show a console window?

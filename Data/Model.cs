@@ -7,10 +7,15 @@ namespace BackupCore
 {
     public class FileContext : DbContext
     {
+        private string name = "Backup";
+        public FileContext(string name)
+        {
+            this.name = name;
+        }
         public DbSet<ProcessedFile> Files { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=" + Program.DbName + ".db");
+            optionsBuilder.UseSqlite("Data Source=" + name + ".db");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
