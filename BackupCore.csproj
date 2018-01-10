@@ -17,4 +17,7 @@
     <None Update="7z.exe" CopyToOutputDirectory="PreserveNewest"/>
     <None Update="test.ini" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
+  <PropertyGroup>
+    <NoWarn>NU1701;1701</NoWarn>
+  </PropertyGroup>
 </Project>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace BackupCore
 {
@@ -47,7 +48,6 @@ namespace BackupCore
                         Console.WriteLine(" - {0}", file.FileName);
                     }
                 }
-
             }
         }
 
@@ -73,7 +73,7 @@ namespace BackupCore
             }
             else
             {
-                Console.WriteLine("File doesn't need replacing " + currentFile.FileName);
+                if (Program.Verbose) Console.WriteLine("File doesn't need replacing " + currentFile.FileName);
             }
         }
 
@@ -89,6 +89,11 @@ namespace BackupCore
                 }
 
                 PushNewCopy(to, copyPath, copies);
+            }
+            if (from == null)
+            {
+                Console.WriteLine("Deleted file " + from);
+                File.Delete(to);
             }
             File.Copy(from, to, true);
         }

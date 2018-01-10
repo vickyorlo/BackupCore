@@ -25,7 +25,7 @@ namespace BackupCore
             ActionName = name;
             SourcePath = source;
             DestinationPath = destination;
-            FilesToCopy = RecursiveFileFinder.ProcessPath(source);
+            FilesToCopy = RecursiveFileFinder.ProcessPath(source, true);
             Mode = bmode;
             Comparator = comparator;
             BackupCopies = copies;

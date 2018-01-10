@@ -1,4 +1,5 @@
 using CommandLine;
+using CommandLine.Text;
 using System.Collections.Generic;
 
 namespace BackupCore
@@ -33,5 +34,36 @@ namespace BackupCore
          HelpText = "The password to put on the archive. Ignore for no password.")]
         public string Password { get; set; }
 
+        [Option('v', "verbose",
+        HelpText = "Turn on to see the full program state output.")]
+        public bool Verbose { get; set; }
+
+        [Usage(ApplicationAlias = "Backup Core")]
+        public static IEnumerable<Example> Examples
+        {
+            get
+            {
+                yield return new Example("Reading configuration from an ini file", new Options { Configuration = "test.ini" });
+                yield return new Example("Reading configuration from command line parameters", new Options
+                {
+                    Inputs = new List<string>() { "./Source" },
+                    Outputs = new List<string>() { "./Destination" },
+                    ComparisonMethod = "bydate",
+                    History = 1,
+                    Archive = true,
+                    Password = "test"
+                });
+                yield return new Example("Multiple sources, one destination directory", new Options
+                {
+                    Inputs = new List<string>() { "./Source", "./Source2", "./Source3" },
+                    Outputs = new List<string>() { "./Destination" },
+                });
+                yield return new Example("Multiple sourcesa, multiple destinations", new Options
+                {
+                    Inputs = new List<string>() { "./Source", "./Source2" },
+                    Outputs = new List<string>() { "./Destination", "./Destionation2" },
+                });
+            }
+        }
     }
 }

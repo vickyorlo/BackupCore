@@ -14,7 +14,7 @@ namespace BackupCore
         /// </summary>
         /// <param name="path">The path to deep-scan for files.</param>
         /// <returns>A list of paths to files found within the path</returns>
-        public static List<string> ProcessPath(string path)
+        public static List<string> ProcessPath(string path, bool checkForValidPath)
         {
             List<string> FoundFiles = new List<string>();
             if (File.Exists(path))
@@ -25,9 +25,9 @@ namespace BackupCore
             {
                 ProcessDirectory(path, FoundFiles);
             }
-            else
+            else if (checkForValidPath)
             {
-                throw new Exception("Not a valid path");
+                throw new ArgumentException("Directory: " + path + " does not exist or invalid input!");
             }
             return FoundFiles;
         }

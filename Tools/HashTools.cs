@@ -41,7 +41,6 @@ namespace BackupCore
         /// <returns>True if the hashes are equal, false otherwise.</returns>
         public static bool CompareHashes(byte[] hash1, byte[] hash2)
         {
-            if (hash1.Length == hash2.Length) return false;
             for (int i = 0; i < hash1.Length; i++)
             {
                 if (hash1[i] != hash2[i]) return false;

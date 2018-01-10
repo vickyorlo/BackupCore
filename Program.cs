@@ -12,29 +12,41 @@ namespace BackupCore
     public class Program
     {
         static List<BackupAction> BackupActionList = new List<BackupAction>();
+        public static bool Verbose;
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            if (args.Count() == 0)
+            {
+                Console.Error.Write("No arguments given. See --help for usage examples.");
+                return 1;
+            }
             try
             {
                 var result = Parser.Default.ParseArguments<Options>(args);
                 result.WithParsed((options) => AddBackupAction(options));
-
-                foreach (var backupAction in BackupActionList)
+                if (BackupActionList.Count > 0)
                 {
-                    BackupFiles(backupAction);
-                }
+                    foreach (var backupAction in BackupActionList)
+                    {
+                        BackupFiles(backupAction);
+                    }
 
-                if (BackupActionList[0].Archive) ArchiveFiles(BackupActionList);
+                    if (BackupActionList[0].Archive) ArchiveFiles(BackupActionList);
+                    return 0;
+                }
+                else return 1;
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 Console.Error.Write(ex.Message);
+                return -1;
             }
         }
 
         private static void AddBackupAction(Options options)
         {
+            Program.Verbose = options.Verbose;
             if (options.Configuration != null)
             {
                 ReadConfigurationFromFile(options);
@@ -57,9 +69,9 @@ namespace BackupCore
 
             if (options.Outputs.Count() == 1)
             {
-                foreach (var source in options.Inputs)
+                for (int i = 0; i < options.Inputs.Count(); i++)
                 {
-                    BackupActionList.Add(new BackupAction("backup", options.Inputs[0], options.Outputs[0], BackupMode.FileCompareBackup, comparator, (int)options.History, options.Archive, options.Password));
+                    BackupActionList.Add(new BackupAction("backup", options.Inputs[i], options.Outputs[0] + "/" + Path.GetFileName(options.Inputs[i]) + "/", BackupMode.FileCompareBackup, comparator, (int)options.History, options.Archive, options.Password));
                 }
             }
             else if (options.Inputs.Count() == options.Outputs.Count())
@@ -83,11 +95,11 @@ namespace BackupCore
                 var parser = new FileIniDataParser();
                 data = parser.ReadFile(options.Configuration);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new ArgumentException("Configuration file does not exist!");
+                Console.Error.Write(e);
+                throw new ArgumentException("Configuration file does not exist or invalid format! /n Check the example ");
             }
-
             var flags = data["Flags"];
             var files = data["Files"];
             string actionName = flags["profile"];
@@ -159,10 +171,10 @@ namespace BackupCore
             // Prepare the process to run
             ProcessStartInfo start = new ProcessStartInfo();
             // Enter in the command line arguments, everything you would enter after the executable name itself
-            start.Arguments = "a -t7z " + actionList[0].ActionName.Replace(" ", "-") + ".7z \" ";
+            start.Arguments = "a -t7z " + "-p" + actionList[0].ArchivePassword + " " + actionList[0].ActionName.Replace(" ", "-") + ".7z  ";
             foreach (var action in actionList)
             {
-                start.Arguments += action.DestinationPath + "\" ";
+                start.Arguments += action.DestinationPath + " ";
             }
             // Enter the executable to run, including the complete path
             start.FileName = ".\\7z.exe";

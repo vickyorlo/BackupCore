@@ -12,6 +12,20 @@
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceRoot}/bin/Debug/netcoreapp2.0/BackupCore.dll",
             "args": [
+                /*"-i",
+                "D:/..testing/source1",
+                "D:/..testing/source2",
+                "-o",
+                "D:/..testing/destination",
+                "-a",
+                "-p",
+                "qwerty",
+                "-h",
+                "2",
+                "-c",
+                "byhash",
+                "-v"*/
+                //"--help"
                 "test.ini"
             ],
             "cwd": "${workspaceRoot}",
