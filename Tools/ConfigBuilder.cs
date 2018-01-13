@@ -27,11 +27,11 @@ namespace BackupCore
         private List<BackupAction> ReadConfigurationFromCommandLine(Options options)
         {
             List<BackupAction> backupActionList = new List<BackupAction>();
-            CompareMethod comparator;
+            IComparator comparator;
             switch (options.ComparisonMethod)
             {
-                case "bydate": comparator = CompareMethod.WriteTimeComparator; break;
-                case "byhash": comparator = CompareMethod.HashComparator; break;
+                case "bydate": comparator = new HashComparator(); break;
+                case "byhash": comparator = new DateComparator(); break;
                 default: throw new ArgumentException("Invalid value in 'compare' setting!");
             }
 
@@ -80,11 +80,11 @@ namespace BackupCore
                 case "simple": mode = new FileBackup(); break;
                 default: throw new ArgumentException("Invalid value in 'mode' setting!");
             }
-            CompareMethod comparator;
+            IComparator comparator;
             switch (flags["compare"])
             {
-                case "bydate": comparator = CompareMethod.WriteTimeComparator; break;
-                case "byhash": comparator = CompareMethod.HashComparator; break;
+                case "bydate": comparator = new HashComparator(); break;
+                case "byhash": comparator = new DateComparator(); break;
                 default: throw new ArgumentException("Invalid value in 'compare' setting!");
             }
 

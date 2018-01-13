@@ -14,12 +14,12 @@ namespace BackupCore
         public string DestinationPath { get; }
         public List<string> FilesToCopy { get; }
         public IBackup BackupProcessor { get; }
-        public CompareMethod Comparator { get; }
+        public IComparator Comparator { get; }
         public int BackupCopies { get; }
         public bool Archive { get; }
         public string ArchivePassword { get; }
 
-        public BackupAction(string name, string source, string destination, IBackup bmode, CompareMethod comparator = CompareMethod.WriteTimeComparator,
+        public BackupAction(string name, string source, string destination, IBackup bmode, IComparator comparator,
             int copies = 1, bool archive = false, string pass = "")
         {
             ActionName = name;

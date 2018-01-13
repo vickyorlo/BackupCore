@@ -69,7 +69,7 @@ namespace BackupCore
         /// <param name="currentFile">The catalogued file to update</param>
         private void ReplaceCataloguedFile(FileContext db, ProcessedFile currentFile)
         {
-            if (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified) //then our file got updated
+            if (action.Comparator.WasFileUpdated(currentFile))
             {
                 if (File.Exists(currentFile.BackupPath))
                 {
@@ -109,22 +109,6 @@ namespace BackupCore
             else File.Copy(from, to, true);
         }
 
-        private bool IsFileEqualToDB(ProcessedFile currentFile)
-        {
-            switch (action.Comparator)
-            {
-                case CompareMethod.WriteTimeComparator:
-                    {
-                        return (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified);
-                    }
-                case CompareMethod.HashComparator:
-                    {
-                        return (HashTools.CompareHashes(HashTools.HashFile(currentFile.FilePath), currentFile.FileHash));
-                    }
-            }
-            return true;
-        }
-
         /// <summary>
         /// Given a path to a file, adds it to the file database and backs it up to the target path.
         /// </summary>
@@ -140,21 +124,7 @@ namespace BackupCore
             }
 
             File.Copy(file, targetPath, false);
-
-            switch (action.Comparator)
-            {
-                case CompareMethod.WriteTimeComparator:
-                    {
-                        db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, DateModified = File.GetLastWriteTime(file) });
-                        break;
-                    }
-                case CompareMethod.HashComparator:
-                    {
-                        db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, FileHash = HashTools.HashFile(file) });
-                        break;
-                    }
-
-            }
+            db.Files.Add(new ProcessedFile { FileName = Path.GetFileName(file), FilePath = file, BackupPath = targetPath, DateModified = File.GetLastWriteTime(file), FileHash = HashTools.HashFile(file) });
 
             Console.WriteLine("Added new file " + Path.GetFileName(file));
         }

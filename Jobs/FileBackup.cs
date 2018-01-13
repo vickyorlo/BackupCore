@@ -35,7 +35,7 @@ namespace BackupCore
                 if (File.Exists(targetPath))
                 {
 
-                    if (AreFilesChanged(file, targetPath, action.Comparator)) // file changed
+                    if (action.Comparator.WasFileUpdated(file, targetPath)) // file changed
                     {
                         PushNewCopy(file, targetPath);
                         Console.WriteLine("Replaced file " + Path.GetFileName(targetPath));
@@ -60,21 +60,6 @@ namespace BackupCore
                 PushNewCopy(null, file);
             }
             Console.WriteLine("Done!");
-        }
-        private bool AreFilesChanged(string file1, string file2, CompareMethod method)
-        {
-            switch (method)
-            {
-                case CompareMethod.WriteTimeComparator:
-                    {
-                        return File.GetLastWriteTime(file1) > File.GetLastWriteTime(file2);
-                    }
-                case CompareMethod.HashComparator:
-                    {
-                        return !HashTools.CompareHashes(HashTools.HashFile(file1), HashTools.HashFile(file2));
-                    }
-            }
-            return true;
         }
 
         private void PushNewCopy(string from, string to, int copies = 0)
