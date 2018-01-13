@@ -13,33 +13,31 @@ namespace BackupCore
         public string SourcePath { get; }
         public string DestinationPath { get; }
         public List<string> FilesToCopy { get; }
-        public BackupMode Mode { get; }
+        public IBackup BackupProcessor { get; }
         public CompareMethod Comparator { get; }
         public int BackupCopies { get; }
         public bool Archive { get; }
         public string ArchivePassword { get; }
 
-        public BackupAction(string name, string source, string destination, BackupMode bmode = BackupMode.DatabaseCompareBackup, CompareMethod comparator = CompareMethod.WriteTimeComparator,
+        public BackupAction(string name, string source, string destination, IBackup bmode, CompareMethod comparator = CompareMethod.WriteTimeComparator,
             int copies = 1, bool archive = false, string pass = "")
         {
             ActionName = name;
             SourcePath = source;
             DestinationPath = destination;
             FilesToCopy = RecursiveFileFinder.ProcessPath(source, true);
-            Mode = bmode;
+            BackupProcessor = bmode;
             Comparator = comparator;
             BackupCopies = copies;
             Archive = archive;
             ArchivePassword = pass;
         }
+
+        public void Start()
+        {
+            BackupProcessor.Start(this);
+        }
     }
-
-    enum BackupMode
-    {
-        DatabaseCompareBackup,
-        FileCompareBackup
-    };
-
     enum CompareMethod
     {
         HashComparator,

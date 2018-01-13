@@ -1,18 +1,20 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BackupCore
 {
-    static class DatabaseBackup
+    class DatabaseBackup : IBackup
     {
-        private static BackupAction action;
+        private BackupAction action;
+        private List<ProcessedFile> deletedFiles;
         /// <summary>
         /// Starts a backup action, using an internal database to speed up file comparation.
         /// Good for cases of relatively slow IO speeds.
         /// </summary>
         /// <param name="action">The action containing the source, destination and files to backup</param>
-        public static void Start(BackupAction backupAction)
+        public void Start(BackupAction backupAction)
         {
             action = backupAction;
             Console.WriteLine("Proceeding with a database based comparison backup job");
@@ -22,6 +24,7 @@ namespace BackupCore
             using (var db = new FileContext(action.ActionName))
             {
                 db.Database.EnsureCreated();
+                deletedFiles = new List<ProcessedFile>(db.Files.Where((f) => f.FilePath.Contains(action.SourcePath)));
                 ProcessedFile cataloguedFile;
                 foreach (var file in action.FilesToCopy)
                 {
@@ -32,9 +35,17 @@ namespace BackupCore
                     }
                     else
                     {
+                        deletedFiles.Remove(cataloguedFile);
                         ReplaceCataloguedFile(db, cataloguedFile);
                     };
                 }
+                foreach (var file in deletedFiles)
+                {
+                    PushNewCopy(null, file.BackupPath);
+                    db.Files.Remove(file);
+                }
+
+
                 var count = db.SaveChanges();
 
                 if (Program.Verbose)
@@ -56,7 +67,7 @@ namespace BackupCore
         /// </summary>
         /// <param name="db">The database containing catalogues files</param>
         /// <param name="currentFile">The catalogued file to update</param>
-        private static void ReplaceCataloguedFile(FileContext db, ProcessedFile currentFile)
+        private void ReplaceCataloguedFile(FileContext db, ProcessedFile currentFile)
         {
             if (File.GetLastWriteTime(currentFile.FilePath) > currentFile.DateModified) //then our file got updated
             {
@@ -77,7 +88,7 @@ namespace BackupCore
             }
         }
 
-        private static void PushNewCopy(string from, string to, int copies = 0)
+        private void PushNewCopy(string from, string to, int copies = 0)
         {
             if (++copies < action.BackupCopies)
             {
@@ -92,13 +103,13 @@ namespace BackupCore
             }
             if (from == null)
             {
-                Console.WriteLine("Deleted file " + from);
+                Console.WriteLine("Deleted file " + to);
                 File.Delete(to);
             }
-            File.Copy(from, to, true);
+            else File.Copy(from, to, true);
         }
 
-        private static bool IsFileEqualToDB(ProcessedFile currentFile)
+        private bool IsFileEqualToDB(ProcessedFile currentFile)
         {
             switch (action.Comparator)
             {
@@ -120,7 +131,7 @@ namespace BackupCore
         /// <param name="db">The database containing catalogues files</param>
         /// <param name="targetPath">The path to copy the file to</param>
         /// <param name="file">The file to back up</param>
-        private static void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file)
+        private void CatalogueAndCopyNewFile(FileContext db, string targetPath, string file)
         {
 
             if (!Directory.Exists(targetPath.Replace(Path.GetFileName(file), "")))

@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace BackupCore
 {
-    static class FileBackup
+    class FileBackup : IBackup
     {
-        private static BackupAction action;
+        private BackupAction action;
         /// <summary>
         /// Starts a backup action, using a file-to-file comparison to look for changes.
         /// Safer than database backups, allows for modification of jobs at the user's risk. However, can be bottlenecked by IO speeds.
         /// </summary>
         /// <param name="action">The action containing the source, destination and files to backup</param>
-        public static void Start(BackupAction backupAction)
+        public void Start(BackupAction backupAction)
         {
             action = backupAction;
             Console.WriteLine("Proceeding with a simple file cross-comparison backup job");
@@ -61,7 +61,7 @@ namespace BackupCore
             }
             Console.WriteLine("Done!");
         }
-        private static bool AreFilesChanged(string file1, string file2, CompareMethod method)
+        private bool AreFilesChanged(string file1, string file2, CompareMethod method)
         {
             switch (method)
             {
@@ -77,7 +77,7 @@ namespace BackupCore
             return true;
         }
 
-        private static void PushNewCopy(string from, string to, int copies = 0)
+        private void PushNewCopy(string from, string to, int copies = 0)
         {
             if (++copies < action.BackupCopies)
             {
