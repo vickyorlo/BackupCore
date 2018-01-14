@@ -11,16 +11,15 @@ namespace BackupCore
 {
     class ConfigBuilder
     {
-        public List<BackupAction> LoadConfig(Options options)
+        public (List<BackupAction> actionList, bool verbose, bool archive) LoadConfig(Options options)
         {
-            Program.Verbose = options.Verbose;
             if (options.Configuration != null)
             {
-                return ReadConfigurationFromFile(options);
+                return (ReadConfigurationFromFile(options), options.Verbose, options.Archive);
             }
             else
             {
-                return ReadConfigurationFromCommandLine(options);
+                return (ReadConfigurationFromCommandLine(options), options.Verbose, options.Archive);
             }
         }
 
@@ -35,20 +34,21 @@ namespace BackupCore
                 default: throw new ArgumentException("Invalid value in 'compare' setting!");
             }
 
-            if (options.Outputs.Count == 1)
-            {
-                for (int i = 0; i < options.Inputs.Count; i++)
-                {
-                    backupActionList.Add(new BackupAction("backup", options.Inputs[i], options.Outputs[0] + "/" + Path.GetFileName(options.Inputs[i]) + "/", new FileBackup(), comparator, (int)options.History, options.Archive, options.Password));
-                }
-            }
-            else if (options.Inputs.Count == options.Outputs.Count)
+            if (options.Inputs.Count == options.Outputs.Count)
             {
                 for (int i = 0; i < options.Inputs.Count; i++)
                 {
                     backupActionList.Add(new BackupAction("backup", options.Inputs[i], options.Outputs[i], new FileBackup(), comparator, (int)options.History, options.Archive, options.Password));
                 }
             }
+            else if (options.Outputs.Count == 1)
+            {
+                for (int i = 0; i < options.Inputs.Count; i++)
+                {
+                    backupActionList.Add(new BackupAction("backup", options.Inputs[i], options.Outputs[0] + "/" + Path.GetFileName(options.Inputs[i]) + "/", new FileBackup(), comparator, (int)options.History, options.Archive, options.Password));
+                }
+            }
+
             else
             {
                 throw new ArgumentException("The number of destinations must be equal to 1 or the number of sources!");

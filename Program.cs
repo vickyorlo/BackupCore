@@ -9,13 +9,16 @@ namespace BackupCore
 {
     public class Program
     {
-        static List<BackupAction> BackupActionList = new List<BackupAction>();
         public static bool Verbose;
 
-        static ConfigBuilder configBuilder = new ConfigBuilder();
 
         public static int Main(string[] args)
         {
+
+            List<BackupAction> BackupActionList = new List<BackupAction>();
+            ConfigBuilder configBuilder = new ConfigBuilder();
+            bool archive = false;
+
             if (args.Count() == 0)
             {
                 Console.Error.Write("No arguments given. See --help for usage examples.");
@@ -24,7 +27,7 @@ namespace BackupCore
             try
             {
                 var result = Parser.Default.ParseArguments<Options>(args);
-                result.WithParsed((options) => BackupActionList = configBuilder.LoadConfig(options));
+                result.WithParsed((options) => (BackupActionList, Verbose, archive) = configBuilder.LoadConfig(options));
                 if (BackupActionList.Count > 0)
                 {
                     foreach (var backupAction in BackupActionList)
@@ -32,7 +35,7 @@ namespace BackupCore
                         backupAction.Start();
                     }
 
-                    if (BackupActionList[0].Archive) ArchiveFiles(BackupActionList);
+                    if (archive) ArchiveFiles(BackupActionList);
                     return 0;
                 }
                 else return 1;

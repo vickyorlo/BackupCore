@@ -23,9 +23,9 @@ namespace BackupCore
             List<string> relativeFiles = new List<string>();
             for (int i = 0; i < action.FilesToCopy.Count; i++)
             {
-                relativeFiles.Add(action.FilesToCopy[i].Replace(action.SourcePath + "\\", ""));
+                relativeFiles.Add(action.FilesToCopy[i].Replace(action.SourcePath, "").Trim('\\'));
             }
-            deletedFiles.RemoveAll((s) => relativeFiles.Contains(s.Replace(action.DestinationPath, "")));
+            deletedFiles.RemoveAll((s) => relativeFiles.Contains(s.Replace(action.DestinationPath, "").Trim('\\')));
             deletedFiles.RemoveAll((s) => s.Contains(".copyMinus"));
 
 
@@ -34,7 +34,6 @@ namespace BackupCore
                 string targetPath = action.DestinationPath + (file.Replace(action.SourcePath, ""));
                 if (File.Exists(targetPath))
                 {
-
                     if (action.Comparator.WasFileUpdated(file, targetPath)) // file changed
                     {
                         PushNewCopy(file, targetPath);

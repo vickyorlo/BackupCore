@@ -12,11 +12,13 @@
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceRoot}/bin/Debug/netcoreapp2.0/BackupCore.dll",
             "args": [
-                /*"-i",
+                "-i",
                 "D:/..testing/source1",
                 "D:/..testing/source2",
+                //"D:/..testing",
                 "-o",
                 "D:/..testing/destination",
+                //"D:/..testing2",
                 "-a",
                 "-p",
                 "qwerty",
@@ -24,9 +26,9 @@
                 "2",
                 "-c",
                 "byhash",
-                "-v"*/
+                "-v"
                 //"--help"
-                "test.ini"
+                //"test.ini"
             ],
             "cwd": "${workspaceRoot}",
             // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

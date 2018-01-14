@@ -1,7 +1,8 @@
 namespace BackupCore
 {
-    interface Comparator
+    interface IComparator
     {
-        bool AreFilesDifferent(string path1, string path2);
+        bool WasFileUpdated(string path1, string path2);
+        bool WasFileUpdated(ProcessedFile currentFile);
     }
 }
