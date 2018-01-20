@@ -74,7 +74,7 @@ namespace BackupCore
                 if (File.Exists(currentFile.BackupPath))
                 {
                     PushNewCopy(currentFile.FilePath, currentFile.BackupPath);
-                    currentFile.DateModified = File.GetLastWriteTime(currentFile.FilePath);
+                    action.Comparator.UpdateEntry(db, currentFile);
                     Console.WriteLine("Replaced file " + currentFile.FileName);
                 }
                 else

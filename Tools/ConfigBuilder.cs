@@ -99,9 +99,9 @@ namespace BackupCore
             List<BackupAction> backupActionList = new List<BackupAction>();
             if (destination.Length == 1)
             {
-                foreach (var source in sources)
+                for (int i = 0; i < sources.Length; i++)
                 {
-                    backupActionList.Add(new BackupAction(actionName, source, destination[0], mode, comparator, copies, archive, password));
+                    backupActionList.Add(new BackupAction(actionName, sources[i], destination[0] + "/" + Path.GetFileName(sources[i]) + "/", mode, comparator, copies, archive, password));
                 }
             }
             else if (sources.Length == destination.Length)
